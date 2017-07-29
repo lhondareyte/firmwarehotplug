@@ -1,0 +1,25 @@
+[README]
+
+This directory contains USB-MIDI complient firmware for the EZUSB chip
+(AN2131SC) developed to make USB-MIDI adaptors run with Linux.
+
+The firmware is known to support the following hardware:
+- MidiSportUNO (Midiman) : operational (= 1x1)
+- MidiSport1x1 (Midiman) : operational
+- MidiSport2x2 (Midiman) : operational
+- USB-2-MIDI (Steinberg) : operational (= 2x2)
+- MidiSport4x4 (Midiman) : first two ports operational, no leds, work in progress
+- MidiSport8x8 (Midiman) : unknown, perhaps like 4x4
+
+There are two, complete different versions of the firmware, the "original"
+(or version 1) and the "unified" (or version 2).
+
+As the version numbers propose, the unified version is much newer and ways
+better, but in the moment, only intented for developers. Consider it the
+unstable branch.
+
+The original branch should be your preference if you simply want to get
+your devices going.
+
+
+Lars Doelle <lars.doelle@on-line.de>

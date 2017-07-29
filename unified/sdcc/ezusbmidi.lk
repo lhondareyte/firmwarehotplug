@@ -1,0 +1,23 @@
+-muwx
+-i ezusbmidi.ihx
+-M
+-Y
+-b HOME = 0x0000
+-b XSEG = 0x2000
+-b PSEG = 0x2000
+-b ISEG = 0x0000
+-b BSEG = 0x0000
+-k /usr/local/bin/../share/sdcc/lib/large
+-k /usr/local/share/sdcc/lib/large
+-l mcs51
+-l libsdcc
+-l libint
+-l liblong
+-l libfloat
+ezusbmidi.rel
+uart.rel
+ep0.rel
+pipeline.rel
+desc.rel
+
+-e

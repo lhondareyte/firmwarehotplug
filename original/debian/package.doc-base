@@ -1,0 +1,22 @@
+Document: ezusbmidi
+Title: Debian ezusbmidi Manual
+Author: <insert document author here>
+Abstract: This manual describes what ezusbmidi is
+ and how it can be used to
+ manage online manuals on Debian systems.
+Section: unknown
+
+Format: debiandoc-sgml
+Files: /usr/share/doc/ezusbmidi/ezusbmidi.sgml.gz
+
+Format: postscript
+Files: /usr/share/doc/ezusbmidi/ezusbmidi.ps.gz
+
+Format: text
+Files: /usr/share/doc/ezusbmidi/ezusbmidi.text.gz
+
+Format: HTML
+Index: /usr/share/doc/ezusbmidi/html/index.html
+Files: /usr/share/doc/ezusbmidi/html/*.html
+
+  

@@ -1,0 +1,37 @@
+1) Have hotplug <http://linux-hotplug.sourceforge.net> installed including the fxload program.
+   (Debian users note that fxload is in a separate package hotplug-utils)
+
+2) Make and install the driver in /lib/modules/linux-.../misc
+   This can be done either directly from the kernel > 2.5.40, or
+   for 2.4.* from <http://member.nifty.ne.jp/Breeze/softwares/unix/usbmidi-e.html>
+   
+3) depmod -a
+4) Check /lib/modules/linux-.../usbmap
+
+
+=== The following steps are only needed for the midisport firmware ===
+
+
+5) Add the following lines to /etc/hotplug/usb.usermap
+   (or, if you're running Debian, into /etc/hotplug/usb.usermap.local and
+    run update-usb.usermap. Verify that the lines ended in /etc/hotplug/usb.usermap)
+----------------------------------------------------------------------------------------
+# usb module         match_flags idVendor idProduct bcdDevice_lo bcdDevice_hi bDeviceClass bDeviceSubClass bDeviceProtocol bInterfaceClass bInterfaceSubClass bInterfaceProtocol driver_info
+ezusbmidi         0x0003 0x0763   0x1010    0x0000       0x0000       0x00         0x00            0x00            0x00            0x00            0x00            0x00000000
+ezusbmidi         0x0003 0x0763   0x1001    0x0000       0x0000       0x00         0x00            0x00            0x00            0x00            0x00            0x00000000
+ezusbmidi         0x0003 0x0763   0x1020    0x0000       0x0000       0x00         0x00            0x00            0x00            0x00            0x00            0x00000000
+ezusbmidi         0x0003 0x0763   0x1030    0x0000       0x0000       0x00         0x00            0x00            0x00            0x00            0x00            0x00000000
+----------------------------------------------------------------------------------------
+
+6) copy the firmware file(s) into /etc/hotplug/usb/
+7) add the following lines into a new file /etc/hotplug/usb/ezusbmidi
+----------------------------------------------------------------------------------------
+#!/bin/sh
+
+case "$PRODUCT" in
+  763/1010/1) fxload -I /etc/hotplug/usb/ezusbmidi1x1.ihx ;; # Midisport1x1 pre-enumberation
+  763/1001/1) fxload -I /etc/hotplug/usb/ezusbmidi2x2.ihx ;; # Midisport2x2 pre-enumberation
+esac
+----------------------------------------------------------------------------------------
+
+8) you're done, firmware and drivers will be loaded automatically.

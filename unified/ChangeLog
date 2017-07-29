@@ -1,0 +1,254 @@
+TODO
+
+- flush MIDI->USB pipeline if USB "closed"
+  problem is that once the EP is armed via INxBC, but the host
+  does not poll, we have old data in the buffer. One should flush
+  the INxBUF when the host does not poll the data by setting the
+  BSY flag, but that has to be done with great care.
+  Actually, the in-pipeline should be driven by polls and cleared
+  including armed USB bufferes, when there is no poll detected.
+
+- make midi in pipeline not to emit bulks _before_ configuration
+- revisit pipelines (they actually look pretty good)
+- Drive ReEnumberate by timer and state?
+
+- prepare proper regression test set
+- test ports>2 is ok
+
+- finish docs
+
+- Revisit EP0 logic
+- clean up HSNAK, STALL
+
+- use Timer2 to control UART?
+
+- get power management going
+- move back to small model again?
+
+
+DONE
+
+084
+- patched vendor/productid+1 into descriptor
+- made descriptor more readable
+- worked towards generalized pins/leds
+
+083
+- fixed a USB Reset related issue (unarmed IN EP)
+
+082
+- unified firmware
+
+081
+- got descriptor set based on EEPROM vendor/productid recognition
+
+080
+- minor rearangements
+
+079
+- EEPROM reading now fully operational
+  sdcc is sometimes too "clever" optimizing.
+
+078
+- got I2C bus EEPROM reading basically going
+
+077
+- removed all -DCONFIG_Midisport?x?.
+- have -DDEVICE=? left.
+
+076
+- minor clarifications
+- removed -DCONFIG_Midisport?x? from all but one file.
+
+075
+- straightened jack id numbering
+
+074
+- using dynamic descriptors, now.
+- know some more 8051 and SDCC issues.
+
+073
+- working towards integration of descriptors generating
+
+072
+- working towards generating descriptors
+
+070-071
+- minor clean ups.
+- directory structure adjusted
+
+069
+- created pipeline module.
+- Overall module structure now in proper shape.
+- continue with cleanup after structure change.
+
+068
+- create ep0 module.
+
+067
+- clean ups.
+- continueing to modularize further.
+
+066
+- hours passed by fighting with sdcc oddities.
+- got a properly working module now.
+
+065
+- prerequisits for modularizing complete
+
+064
+- continue working towards isolating UART module
+  isolated first uart.
+
+063
+- working towards isolating UART module
+
+062
+- fixed another indexing "problem".
+  One should definitely avoid int for index looping,
+  as this almost certainly triggers library multiplication.
+
+061
+- removed another #ifdef
+
+060
+- put "cid" into Pipe structure
+- good version, all features operational
+
+059
+- version broken & lost
+
+058
+- further unifications (much of the usb->serial pipeline)
+
+057
+- removed midi parser clone
+- recording still broken
+- investigate further to replace #ifdefs with tables and loops.
+
+056
+- moved variable into structures.
+- firmware survided this operation.
+- following now, we can start to reunify the cloned sections.
+
+055
+- changed 8051 port config to something table-like.
+- version is pretty operational beside recording.
+
+054
+- changed LED handling to something table-like.
+- recording seems broken.
+- status in ksystem broken.
+
+053
+- changed to --model-large, using disabled isochronous buffer space
+
+051
+- changed to CVS version of SDCC
+- introduced an issue with ReEnumberate
+
+050
+- Copy of 044 starting Version 2 of the firmware.
+
+044
+- Xmas release (aka "crash"), it's just about time for the stuff to go public.
+- new descriptors
+- cloned cables
+- minor clean ups
+- web page
+- new uploading concept, see README.hotplug
+
+040-043
+- included modifications by Nagado.
+- failed attempt to merge cables as i want to, decided to live with cloning for a while.
+- failed to run two different devices with ezusb2131
+
+039
+- code rearangements
+- started proper document
+
+038
+- simplified BUF??? stuff.
+- FIXME: we have a sdcc bug, here
+
+037
+- simplified pipeline
+
+036
+- integrated Midi parsing
+
+035
+- cleaned up Timer0 timing
+
+034
+- splitting things apart further
+
+033
+- other dimming source
+
+032
+- got rid of lsrSOF
+
+031
+- simplifying initiation
+- LedBits removed
+
+030
+- polishing further
+
+029
+- adjusted bufsync stuff.
+
+028
+- refined towards release
+
+027
+- fixed driver (USB->MIDI).
+  Oh yes! We can play music!
+
+026
+- basically, recording (MIDI->USB) works, too.
+
+025
+- Playing sound (USB->MIDI) works!
+
+024
+- extended pipeline
+
+023
+- started USB->MIDI pipeline
+- we hear sound!
+
+019-022
+- removed 'at' addr bounds.
+- got UART interrupt going - sort of.
+
+015-018
+- missing sbits added to ezusb_reg.h
+- reordered init bits.
+
+006-014
+- grip on the hardware becomes more firm.
+- changed the descriptor so that both
+  the ezusb and the usb-midi driver hook
+  in happily. We can use unmodified drivers,
+  now.
+
+005
+- new descriptors
+
+004
+- EP 0 (GetDescriptor at least) works
+
+003
+- isrSOF (dim USB-LED) sort of works
+
+002
+- got timer interrupt going
+- happily blinking LEDs.
+
+001
+- made driver loading LEDs.
+
+000
+- project created.

@@ -1,0 +1,158 @@
+TODO
+- finish pipelines
+- flush MIDI->USB pipeline if USB "closed"
+- Revisit EP0 logic
+  - Drive ReEnumberate by timer and state
+- clean up HSNAK, STALL
+- use Timer2 to control UART
+- add I2C notice
+- write docs
+
+2002.10.28
+- progress in debianization
+
+2002.10.27
+- BUG #0 (firmware, reopened and closed again)
+
+  Reason for the bug was that after ReEnumberation (i.e. virtually
+  pulling/putting in the plug) the hub issues a USB Bus Reset, which
+  unarms an eventual already armed bulk transfer. Thus, the fix is
+  to accept the Reset just as if the scheduled bulk where delivered.
+
+2002.10.26
+- BUG #0 (firmware, closed)
+
+  When the device is booted while MIDI IN event come in, the
+  IN (reading) pipeline gets blocked, so that one cannot read
+  from the midi device(s).
+
+  Workaround: unplug MIDI IN on the device before the downloading
+  process happens.
+
+  Reason is that serial in starts floating the pipeline even
+  before re-enumberation happens.  Most probably during the
+  configuration process after that, the related EP get locked
+  up, perhaps by the core itself, perhaps by the firmware.
+
+  The problem was fixed by not propagating events while unconfigured.
+
+- BUG #3 (OSSdriver, closed)
+
+  Poll (select) in OSS driver is aparently broken in two ways:
+
+  It may signal data available to read (though there are non)
+  and block then (correctly) the next read. It may also (and that
+  happens with read too), simply block without delivering data.
+  These problems are aparently triggered by open/close calls,
+  even on other devices.
+
+  I was not able to reproduce the bug lately, as should be fixed
+  in all available versions of the OSS driver. It does not appear
+  with the ALSA driver and about to be closed.
+
+039
+- code rearangements
+- started proper document
+
+038
+- simplified BUF??? stuff.
+- FIXME: we have a sdcc bug, here
+
+037
+- simplified pipeline
+
+036
+- integrated Midi parsing
+
+035
+- cleaned up Timer0 timing
+
+034
+- splitting things apart further
+
+033
+- other dimming source
+
+032
+- got rid of lsrSOF
+
+031
+- simplifying initiation
+- LedBits removed
+
+030
+- polishing further
+
+029
+- adjusted bufsync stuff.
+
+028
+- refined towards release
+
+027
+- fixed driver (USB->MIDI).
+  Oh yes! We can play music!
+
+026
+- basically, recording (MIDI->USB) works, too.
+
+025
+- Playing sound (USB->MIDI) works!
+
+024
+- extended pipeline
+
+023
+- started USB->MIDI pipeline
+- we hear sound!
+
+022
+- removed 'at' addr bounds.
+
+021
+- proper variable names throughout
+
+020
+- save after failure
+
+019
+- got UART interrupt going - sort of.
+
+017
+- happily reordered init bits. Beware!
+
+016
+- regular names throughout the project
+
+015
+- missing sbits added to ezusb_reg.h
+
+014
+- grip on the driver becomes more firm.
+- changed the descriptor so that both
+  the ezusb and the usb-midi driver hook
+  in happily. We can use unmodified drivers,
+  now.
+
+006-013
+- reduced amount of x_Names.
+- those variables are now only in Init.
+
+005
+- made new descriptor for EP0
+
+004
+- EP 0 (GetDescriptor at least) works
+
+003
+- isrSOF (dim USB-LED) sort of works
+
+002
+- got timer interrupt going
+- happily blinking LEDs.
+
+001
+- made driver loading LEDs.
+
+000
+- project created.

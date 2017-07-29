@@ -1,0 +1,10 @@
+ezusbmidi for Debian
+--------------------
+
+Basically deb building possible at all.
+Mostly docs are not in proper place, yet.
+Should check for dirs, ...
+Should possibly do fxload in postinst, left as exercise to the _real_ maintainer
+
+
+-- Lars Doelle <lars.doelle@on-line.de>, Mon, 28 Oct 2002 12:44:14 +0100

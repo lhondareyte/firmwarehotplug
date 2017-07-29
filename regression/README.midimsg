@@ -1,0 +1,70 @@
+
+midimsg is a tiny utility for send MIDI channel mode messages to external
+MIDI instruments like keyboards, synthesizers, etc.
+
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License version 2 as
+  published by the Free Software Foundation.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
+
+Usage:
+  midimsg [OPTION]... [MIDI DEVICE]
+
+Example:
+  midimsg --local=off /dev/midi2
+
+Options:
+
+--channel=n		Default ALL channels (0-15). If you want to send a message to only
+ -c n			one channel, use this parameter with an integer in the range
+ 			from 0 to 15.
+
+--reset			Reset all controllers to their default values.
+ -r
+
+--local=on|off		Enables or disables internal local control between keyboard and
+ -l on|off		the instrument's internal tone generator.
+
+--shutup		All notes off.
+ -s
+
+--panic			Same as --reset followed by --shutup
+ -p
+
+--omni=on|off		Sets OMNI mode on/off.
+ -o on|off
+
+--mode=mono|poly	Sets MONO or POLY modes.
+ -m mono|poly
+
+--syxreset=gm|gs|xg	Sends a system exclusive reset message, using one of the
+ -x			three standards.
+
+--help			Help message
+ -h
+
+Device is "/dev/midi" by default. Any other existing raw MIDI device can be
+specified. Several options can be used at a time.
+
+Options to establish standard MIDI modes:
+	Mode 1		--omni=on  --mode=poly
+	Mode 2		--omni=on  --mode=mono
+	Mode 3		--omni=off --mode=poly
+	Mode 4		--omni=off --mode=mono
+
+Not every MIDI instrument understands all these messages. See the MIDI
+implementation chart of your instrument to see what is applicable in your case.
+
+Compiling:
+	$ gcc -Wall -o midimsg midimsg.c
+
+Install (as root):
+	# cp midimsg /usr/local/bin
+
+Author:
+  Pedro Lopez-Cabanillas <plcl@bigfoot.com>
+  Bug reports and comments are welcome.

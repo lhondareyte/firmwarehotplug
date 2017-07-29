@@ -1,0 +1,19 @@
+Source: ezusbmidi
+Section: sound
+Priority: optional
+Maintainer: Lars Doelle <lars.doelle@on-line.de>
+Build-Depends: debhelper (>> 3.0.0), sdcc
+Standards-Version: 3.5.2
+
+Package: ezusbmidi
+Architecture: any
+Depends: hotplug, fxload
+Description: Firmware drivers for EZUSB MIDI devices
+ This program is an USB-MIDI compliant firmware for the EZUSB chip
+ (AN2131SC) developed to make an USB-MIDI adapter to run with Linux.
+ It runs with these USB-MIDI devices:
+ - Midiman Midisport 1x1
+ - Midiman Midisport 2x2
+ - Midiman Midisport UNO
+ - Steinberg USB-2-MIDI
+ Author: Lars Doelle <lars.doelle@on-line.de>

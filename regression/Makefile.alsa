@@ -1,0 +1,11 @@
+#
+# Regression tests for ALSA rawmidi
+#
+CC=gcc
+CFLAGS=-Wall -g
+LDFLAGS=-lasound -lm -ldl -lpthread
+
+atestlb: atestlb.o
+
+clean:
+	rm -f atestlb *.o

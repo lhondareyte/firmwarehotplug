@@ -1,0 +1,523 @@
+<!doctype linuxdoc system>
+
+<article>
+
+<!-- Title information -->
+
+<title>EzUsbMidi Project Document
+<author>Lars D&ouml;lle,
+<htmlurl url="mailto:lars.doelle@on-line.de" name="lars.doelle@on-line.de">
+<date>Version x.x.x, Okt 2001
+
+<abstract>
+The EzUsbMidi program is a USB-MIDI complient firmware for the EZUSB
+chip (AN2131SC) developed to makes a MidiSport1x1 USB-MIDI adaptor run
+with Linux. This document accompanies the firmware.
+<p>
+
+<!-- Table of contents by PDF -->
+
+<!-- Begin the document -->
+
+<sect>Introduction
+<p>
+The MidiSportNxN (N=1,2,4,8) manufactured by MidiMan is a serie of USB
+to MIDI adaptors. MidiMan includes driver for Windows and Mac with their
+product but they expressed not to make drivers for Linux available in 
+any future nor to technical information without NDA. Since MidiMan's
+firmware and policy is neither compatible with the USB-MIDI specification
+nor with Freeware standards, it became necessary to write this piece of code.
+<p>
+The MidiSport1x1 hardware uses the EZUSB chip (AN2131SC), which is base
+on Intel's 8051 and especially adds a USB core. The chip contains all
+the hardware necessary for an adaptor or micro controler, i.e. timers,
+serial and parallel ports together with 8 kByte of RAM. MidiMan added
+the glue logic, and the plugs.
+<p>
+The firmware is not burned into a ROM, but instead downloaded over the
+USB wire.
+<p>
+Since both USB-MIDI class drivers and EZUSB firmware loading drivers
+were available at the time, the project started, making the MidiSport1x1
+going reduced to writing a firmware for the EZUSB chip. This was further
+simplified by a large stack of public available documentations on the
+chip (both from Intel and Cytrex) and by a rich freeware infrastructure
+around it, most notably the SDCC compiler, which allowed to write the
+whole firmware in C.
+<p>
+The author holds both the MidiSport hardware and the firmware for only
+one example of a large class of adaptors and controlers and hopes that
+the software included might help with other projects, too.
+
+<sect>License
+<p>
+Both the EzUsbMidi firmware and this document are free software under the
+terms of the GNU GENERAL PUBLIC LICENSE, Version 2.
+
+
+<sect>Installation of the Firmware
+<p>
+
+<sect1>Overview
+<p>
+<itemize>
+<item>get a ezusb firmware downloader and a usb-midi driver running.
+<item>download the firmware.
+</itemize>
+
+<sect1>Detailed installation
+<p>
+<em>Note that most of the instructions in this section is obsoleted by
+    the linux hotplug system. All references to ezusb2131 are obsolete
+    though it could well be possible, that this procedure is still
+    usable. I'll update the section, soon. Instead of the ezusb2131
+    use the fxload program together with the linux-hotplug infrastructure.
+    Until this section is updated, find more material in the linux-hotplug
+    homepage at &lt;http://sourceforge.net/projects/linux-hotplug/&gt;,
+    and in the Hotplug subdirectory.
+</em>
+<p>
+You need the following prerequisits:
+<p>
+<itemize>
+<item>a USB enabled linux system
+<item>a ezusb2131 firmware loader   &lt;http://www.sourceforge.net/...&gt;
+<item>a usb-midi driver             &lt;http://www.....jp&gt;
+<item>the firmware binary included  (ezusbmidi.ihx)
+</itemize>
+<p>
+The linux kernel has to be USB enabled. Check this using:
+<verb>
+> cat /proc/bus/usb/devices
+</verb>
+which should at least list something, e.g.:
+<verb>
+|      T:  Bus=01 Lev=00 Prnt=00 Port=00 Cnt=00 Dev#=  1 Spd=12  MxCh= 2
+|      B:  Alloc=398/900 us (44%), #Int=  7, #Iso=  0
+|      D:  Ver= 1.10 Cls=09(hub  ) Sub=00 Prot=00 MxPS= 8 #Cfgs=  1
+|      P:  Vendor=0000 ProdID=0000 Rev= 0.00
+|      S:  Product=USB OHCI Root Hub
+|      S:  SerialNumber=d182c000
+|      C:* #Ifs= 1 Cfg#= 1 Atr=40 MxPwr=  0mA
+|      I:  If#= 0 Alt= 0 #EPs= 1 Cls=09(hub  ) Sub=00 Prot=00 Driver=hub
+|      E:  Ad=81(I) Atr=03(Int.) MxPS=   2 Ivl=255ms
+</verb>
+Plug in the MidiSport1x1 and list the USB devices again. You should
+find it properly in the list, now:
+<verb>
+| ...
+|      T:  Bus=01 Lev=02 Prnt=02 Port=02 Cnt=01 Dev#= 11 Spd=12  MxCh= 0
+|      D:  Ver= 1.00 Cls=ff(vend.) Sub=ff Prot=ff MxPS=64 #Cfgs=  1
+| >>>  P:  Vendor=0763 ProdID=1010 Rev= 0.01
+|      C:* #Ifs= 1 Cfg#= 1 Atr=80 MxPwr=100mA
+|      I:  If#= 0 Alt= 0 #EPs= 0 Cls=ff(vend.) Sub=ff Prot=ff Driver=(none)
+|      I:  If#= 0 Alt= 1 #EPs=13 Cls=ff(vend.) Sub=ff Prot=ff Driver=(none)
+|      E:  Ad=81(I) Atr=03(Int.) MxPS=  16 Ivl= 10ms
+| ... long list of endpoints
+|      E:  Ad=0a(O) Atr=01(Isoc) MxPS=  16 Ivl=  1ms
+|      I:  If#= 0 Alt= 2 #EPs=13 Cls=ff(vend.) Sub=ff Prot=ff Driver=(none)
+|      E:  Ad=81(I) Atr=03(Int.) MxPS=  64 Ivl= 10ms
+| ... long list of endpoints
+|      E:  Ad=0a(O) Atr=01(Isoc) MxPS=  16 Ivl=  1ms
+| ...
+</verb>
+Notice the line
+<verb>
+|      P:  Vendor=0763 ProdID=1010 Rev= 0.01
+</verb>
+which gives us the vendor and product ids of the device.
+<p>
+If you're having troubles with this step, consult the USB-HOWTO 
+&lt;http://www.linux-usb.org/USB-guide/book1.html&gt; and
+<tt>/usr/src/linux/Documentation/usb/proc_usb_info.txt</tt>.
+<p>
+Get the ezusb2131 firmware running. To this end, follow the instructions
+in this package and finally insert the ezusb2131 driver using:
+
+<verb>
+|      insmod ezusb2131.o vendor_id=0x763 product_id=0x1010
+</verb>
+
+Check the kernel log
+
+<verb>
+> tail /var/log/messages
+</verb>
+
+to find something like:
+
+<verb>
+| ezusb2131: found ezusb venid 0x763, prodid 0x1010 interface_num:0
+| ezusb2131: ready for download from /proc/ezusb/dev0
+</verb>
+
+and the filesystem:
+
+<verb>
+> ls -l /proc/ezusb
+| --w-------    1 root     root            0 Sep 26 15:27 dev0
+</verb>
+
+This device allows to download the firmware:
+
+<verb>
+> cat ezusbmidi.ihx > /proc/ezusb/dev0
+</verb>
+
+Now, the firmware is downloaded into the hardware:
+
+<verb>
+> tail /var/log/messages
+| ezusb2131: download started for /proc/ezusb/dev0
+| ezusb2131: downloaded 2765 bytes to /proc/ezusb/dev0, re-enumerating
+| usb.c: USB disconnect on device 10
+| ezusb2131: /proc/ezusb/dev0 disconnected
+| hub.c: USB new device connect on bus1/1/3, assigned device number 12
+| usbaudio: device 12 audiocontrol interface 0 interface 1 MIDIStreaming not supported
+| usbaudio: device 12 audiocontrol interface 0 has 0 input and 0 output AudioStreaming interfaces
+| ezusb2131: found ezusb venid 0x763, prodid 0x1010 interface_num:0
+| ezusb2131: ready for download from /proc/ezusb/dev0
+| ezusb2131: found ezusb venid 0x763, prodid 0x1010 interface_num:1
+| ezusb2131: interface number not zero, 1, ezusb2131.c,1135
+| /etc/hotplug/usb.agent: ... no modules for USB product 763/1010/1
+</verb>
+
+<verb>
+> cat /proc/bus/usb/devices
+| ...
+| T:  Bus=01 Lev=02 Prnt=02 Port=02 Cnt=03 Dev#= 12 Spd=12  MxCh= 0
+| D:  Ver= 1.10 Cls=00(>ifc ) Sub=00 Prot=00 MxPS=64 #Cfgs=  1
+| P:  Vendor=0763 ProdID=1010 Rev= 0.01
+| S:  Manufacturer=Lars Doelle <lars.doelle@on-line.de>
+| S:  Product=Simple USB MIDI Adapter Driver
+| S:  SerialNumber=Copyright (c) 2001 by Lars Doelle (GPLv2)
+| C:* #Ifs= 2 Cfg#= 1 Atr=00 MxPwr=100mA
+| I:  If#= 0 Alt= 0 #EPs= 0 Cls=01(audio) Sub=01 Prot=00 Driver=ezusb2131
+| I:  If#= 1 Alt= 0 #EPs= 2 Cls=01(audio) Sub=03 Prot=00 Driver=(none)
+| E:  Ad=01(O) Atr=02(Bulk) MxPS=  64 Ivl=  0ms
+| E:  Ad=81(I) Atr=02(Bulk) MxPS=  64 Ivl=  0ms
+| ...
+</verb>
+
+Notice the USB LED on the MidiSports 1x1 happily blinking. You should be able to
+repeat the last step, too, resulting in a reset visible on the leds of the device.
+<p>
+Now the device is fully prepared for the driver. Compile and insert the
+usb-midi driver:
+
+<verb>
+> insmod usb-midi.o
+</verb>
+
+and verify the success of the operation:
+
+<verb>
+> cat /proc/bus/usb/devices
+| ...
+| T:  Bus=01 Lev=02 Prnt=02 Port=02 Cnt=03 Dev#= 12 Spd=12  MxCh= 0
+| D:  Ver= 1.10 Cls=00(>ifc ) Sub=00 Prot=00 MxPS=64 #Cfgs=  1
+| P:  Vendor=0763 ProdID=1010 Rev= 0.01
+| S:  Manufacturer=Lars Doelle <lars.doelle@on-line.de>
+| S:  Product=Simple USB MIDI Adapter Driver
+| S:  SerialNumber=Copyright (c) 2001 by Lars Doelle (GPLv2)
+| C:* #Ifs= 2 Cfg#= 1 Atr=00 MxPwr=100mA
+| I:  If#= 0 Alt= 0 #EPs= 0 Cls=01(audio) Sub=01 Prot=00 Driver=ezusb2131
+| I:  If#= 1 Alt= 0 #EPs= 2 Cls=01(audio) Sub=03 Prot=00 Driver=midi
+| E:  Ad=01(O) Atr=02(Bulk) MxPS=  64 Ivl=  0ms
+| E:  Ad=81(I) Atr=02(Bulk) MxPS=  64 Ivl=  0ms
+| ...
+</verb>
+
+There, check the line indicating that the interface 1 is now claimed
+by the usb midi driver:
+
+<verb>
+| I:  If#= 1 Alt= 0 #EPs= 2 Cls=01(audio) Sub=03 Prot=00 Driver=midi
+</verb>
+
+One should find this reported in the kernel logs, too:
+<verb>
+> tail /var/log/messages
+| usb-midi: Found MIDISTREAMING on dev 0763:1010, iface 1
+| usb-midi: Found MIDIStreaming device corresponding to Release 1.00 of spec.
+| usb-midi: Found IN Jack 0x01 EMBEDDED
+| usb-midi: Found IN Jack 0x02 EXTERNAL
+| usb-midi: Found OUT Jack 0x03 EMBEDDED, 1 pins
+| usb-midi: Found OUT Jack 0x04 EXTERNAL, 1 pins
+| usbmidi: found [ Simple USB MIDI Adapter Driver ] (0x0763:0x1010), attached:
+| usbmidi: /dev/midi02: in (ep:81 cid: 0 bufsiz:64) out (ep:01 cid: 0 bufsiz:64)
+</verb>
+
+That's it. /dev/midi02 is now ready to read and write raw midi events:
+<verb>
+> echo -n $'\x90\x37\x7f' > /dev/midi2
+> cat /dev/midi2 | od -x
+| 0000000 fefe fefe fefe fefe fefe fefe fefe fefe
+| ...
+</verb>
+
+Use you prefered midi player to play files.
+If you're looking for a player, try the 'midiplay' for a command line tool
+or  give 'muse' a shot for something decent.
+
+<sect1>Installation dependencies
+<p>
+The ezusb2131 and the usb-midi driver can be inserted in any order.
+The ezusb2131 must be inserted before downloading the firmware.
+The firmware must be downloaded each time the MidiSport1x1 is newly
+connected to the system.
+
+
+<sect>Compiling the firmware
+<p>
+The firmware can be compiled using the SDCC compiler available at
+&lt;http://www.sourceforge....&gt;.
+<p>
+After installing the program, simply running
+<verb>
+> make
+</verb>
+should do, to regenerate ezusbmidi.ihx from its sources.
+
+You can reload to new generated firmware by
+<verb>
+> cat ezusbmidi.ihx > /proc/ezusb/dev0
+</verb>
+since the ezusb2131 downloader is kept hooked on the device.
+
+
+<sect>Implementation
+<p>
+<sect1>Overview
+<p>
+The firmware consists of mainly three parts
+<itemize>
+<item>an mostly application neutral handling of the endpoint zero control
+<item>an application specific handling of the USB to and from MIDI transport
+      and conversion.
+<item>an application specific initiation of the 8051 and EZUSB hardware.
+</itemize>
+<p>
+The firmware does a little blinking with the LEDs, but this is an item aside.
+
+<sect1>Specific use of the hardware
+<p>
+<itemize>
+<item>Timer 1
+<item>Timer 2
+<item>UART
+<item>Port B
+<item>Port C (LEDs, UART Rx/Tx)
+<item>USB Endpoint 0 (Control)
+<item>USB Endpoint 1 (Bulk)
+</itemize>
+
+<sect1>USB Endpoint Zero
+<p>
+<sect2>Descriptor
+<p>
+The description is covered in all its details in the appendix of the USB-MIDI
+specification. There are only minor modification of this descriptor:
+<p>
+<itemize>
+<item>MaxPS of endpoint zero is 64.
+<item>FIXME: Powermanagement.
+<item>A few strings added showing the copyright.
+</itemize>
+<p>
+As usual for the Audio Class, logical wires are exposed in the descriptor.
+See the figure below for a visualization of the class specific interface
+and class specific endpoint descriptors:
+<p>
+<figure>
+<eps file="descriptor.eps">
+<img src="descriptor.png">
+</figure>
+
+
+<sect2>Control
+<p>
+
+<sect1>USB MIDI Pipelines
+<p> 
+
+<sect1>USB MIDI Conversion
+<p>
+  USB-MIDI specifies a form of packaging, that requieres stream parsing.
+  The following document goes through the process of transforming from
+  midi to usb-midi format, starting with a description of the midi
+  format, to which we cannot give reference.
+<p>
+  Authorized information about the Midi format is not freely available,
+  this summary is based on material collected from the net. So the
+  format described here may or may not be Midi, but it is definitely
+  the format on which the parsing algorithm of the firmware is based.
+<p>
+  Since the firmware does not have to interprete the stream beyond
+  separating the messages, the parameter meanings are not detailed.
+<p>
+  Find authorized information at &lt;http://www.midi.org&gt; while having
+  your credit card available. Find authorized information about the
+  usb-midi format at &lt;http://www.usb.org&gt;.
+
+<sect2>Midi Stream Syntax
+<p>
+<sect3>Framing
+<p>
+  A Midi stream is a concatenation of individual messages, which are
+  intrinsically self-separating by design. The framing of the midi
+  stream is done distinguising octets into two classes by their most
+  significant bit.
+<p>
+<verb>
+    Data Byte: 0x00 .. 0x7f
+    Cntl Byte: 0x80 .. 0xff
+</verb>
+<p>
+  Control bytes always start a new message while the following data
+  bytes belongs to them. An exception are the control bytes of Real
+  Time Messages, which can be inserted freely everywhere, even inside
+  other messages, without effect on the context.
+<p>
+<verb>
+    Control { Data }
+</verb>
+<p>
+  Trailing data bytes are ignored as well as those at the start of
+  the stream. Messages with an insufficent number of data byte are
+  ignored either.
+
+
+<sect3>Channel Messages
+<p>
+  These messages use "running status", i.e. additinal corresponding
+  data bytes may follow without the introducing control byte.
+<p>
+<verb>
+    8c {nn vv}      Note Off     (nn=Pitch, vv=Velocity)
+    9c {nn vv}      Note On      (nn=Pitch, vv=Velocity)
+    Ac {nn vv}      Key Pressure (nn=Pitch, vv=Pressure)
+    Bc {nn vv}      Parameter    (nn=Parameter, vv=Setting)
+    Cc {pp}         Program      (pp=Program)
+    Dc {pp}         Ch. Pressure (pp=Pressure)
+    Ec {aa bb}      Pitch Wheel  (aabb=Value, 14bit, lsb first)
+</verb>
+<p>
+  The lower nibble (c) contains the channel number.
+<p>
+  Note on with velocity zero means note off.
+<p>
+  USB-MIDI requieres to insert the control bytes omitted by the
+  "running status" preceeding their data.
+
+
+<sect3>System Common Messages
+<p>
+<verb>
+    F1 pn           MTC Midi Time Code (p=Part, n=Nibble)
+    F2 aa bb        Song position (14 bit value, lsb first)
+    F3 nn           Song select (nn = song number)
+   <F4>             - undefined -
+   <F5>             - undefined -
+    F6              tune request
+    F7              EOX (optional terminator for system exclusive messages)
+</verb>
+<p>
+  The EOX message is only transmitted if immediately following (i.e.
+  "terminating") a System Exclusive Message. It is undefined else.
+
+
+<sect3>System Exclusive Message
+<p>
+  These are messages only meaningful to particular devices. They should
+  be ignored by others. To this end, the first byte in the body, if any,
+  is a vendor id. Some vendor ids are used for midi extensions, too.
+<p>
+<verb>
+    F0 {dd} [F7]    variable number of data
+</verb>
+<p>
+  Though the terminating F7 is optionally by design and early specification,
+  each system exclusive message has to be followed by a F7 system common
+  message, now. It has to be appended even if the originating device does
+  not produce it.
+
+
+<sect3>Real Time Messages
+<p>
+  They may be inserted anywhere, even inside other messages, and do
+  not effect "running status", there.
+<p>
+<verb>
+    F8              timing clock
+   <F9>             - undefined -
+    FA              start
+    FB              continue
+    FC              stop
+   <FD>             - undefined -
+    FE              active sensing
+    FF              system reset
+</verb>
+<p>
+  The system reset message should not be send on power on.
+<p>
+  USB-MIDI requieres to reorder the Real Time Messages occuring within
+  other messages.
+
+
+<sect2>Midi to USB-MIDI conversion
+<p>
+  The USB-MIDI first inserts the omitted control byte in all running status
+  message. Further an F7 message is inserted after the last data byte of a
+  system explicit message, if not already present in the stream. It is further
+  considered part of the messages data, and not treated as a control byte anymore.
+<p>
+  The messages are then separated and eventually split into parts of at most
+  three bytes. From length and content of these blocks a four bit code index
+  number (cin) is then derived and added together with a cable number as the
+  first byte to each block.
+<p>
+  One can derive the block length from then cin, so at this point it is save
+  to extend the blocks by appending zero bytes to become packages of four
+  byte length each.
+
+
+<sect2>Midi to USB-MIDI conversion
+<p>
+  Since the cin does not add a single bit of information to the content beside
+  the number of inserted zero bytes, it can be droped after their removal. The
+  parsing is then undone by concatenating the parts to form the midi stream.
+  Because the stream was modified for USB-MIDI inserting the running status
+  bytes here is the place to omit them, hoping to gain the original stream again.
+<p>
+  To summarize the possible modifications of the stream:
+<itemize>
+<item>droped undefined message bytes
+<item>droped partial messages 
+<item>droped extra data bytes.
+<item>droped running status bytes.
+<item>reordered real time message bytes contained in other messages
+<item>added terminating F7 to sysex messages
+</itemize>
+<p>
+  The USB-MIDI specification allows to send raw midi bytes, one per pack,
+  using cin F in cases one wants a preserved stream content.
+
+<sect>Interfacing the serial EEPROM
+<p>
+
+
+<sect>Bibliographie
+<p>
+To make full use of the source, you will like to have some background
+infomations at hand:
+<p>
+<itemize>
+<item>the 8051 chip (www.intel.com/...)
+<item>the ezusb chip (www.cytrex.com/...)
+<item>USB-1.1 specs (www.usb.org/...)
+<item>USB-MIDI specs (www.usb.org/...)
+<item>midi format
+</itemize>
+
+</article>

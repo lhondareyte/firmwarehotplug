@@ -1,0 +1,52 @@
+%define name ezusbmidi
+%define version TODAY
+%define release 1
+
+Summary: Firmware drivers for EZUSB MIDI devices
+Name: %{name}
+Version: %{version}
+Release: %{release}
+Source: %{name}-%{version}.tar.bz2
+Copyright: GPL
+URL: http://linux-hotplug.sourceforge.net
+Group: System/Libraries
+BuildRoot: %{_tmppath}/%{name}-buildroot
+BuildArchitectures: noarch
+Requires: /sbin/fxload, hotplug >= 2002_08_26
+BuildRequires: linuxdoc-tools
+BuildRequires: sdcc >= 2.3.3
+
+%description
+This program is an USB-MIDI compliant firmware for the EZUSB chip
+(AN2131SC) developed to make an USB-MIDI adapter to run with Linux.
+It runs with these USB-MIDI devices:
+- Midiman Midisport 1x1
+- Midiman Midisport 2x2
+- Midiman Midisport UNO
+- Steinberg USB-2-MIDI
+Author: Lars Doelle <lars.doelle@on-line.de>
+
+%prep
+rm -rf $RPM_BUILD_ROOT
+%setup
+
+%build
+make
+
+%install
+make install DESTDIR=$RPM_BUILD_ROOT
+
+%clean
+rm -rf $RPM_BUILD_ROOT
+
+%files
+%defattr(-,root,root)
+%doc AUTHORS COPYING ChangeLog descriptor.png KnownBugs README Hotplug/Hotplugging *.html
+/etc/hotplug/usb/*
+/usr/share/usb/ezusbmidi/*
+
+%changelog
+* Sun Oct 20 2002 Pedro Lopez-Cabanillas <plcl@bigfoot.com> 2002_10_20-1
+- first snapshot.
+
+# end of file

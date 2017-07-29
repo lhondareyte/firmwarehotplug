@@ -1,0 +1,55 @@
+// [LoopBack/README]
+
+Here some work towards a loop back regression test.
+
+The very idea of these test is to feed a defined midi sequence into
+a midi device with is wired back using a loop back cable, so that we
+can read back the input.
+
+Basically the test means to check for examples, that the following
+diagram commutes:
+
+
+             DEVICE-X ====CABLE====> DEVICE-Y
+                ^                        |
+                |                        |
+      DRIVER-X  |           =            |  DRIVER-Y
+                |                        |
+                |                        v
+             /dev/midiX   - - - >   /dev/midiY
+
+
+As the device/driver pairs can be exchanged in the test, other
+devices and drivers can be used to support these tests to track
+down issues.
+
+Though this test is basically simple, it allow full control
+over the device's environment and, depending on the procedure,
+can be made very rigurous tests both for the firmware and the
+driver.
+
+Running multiple such loop back tests the same time allows to
+simulate multi-cable operation and different load types.
+
+---
+
+As this test procedure instantanously triggered quite a few bugs,
+we need to sort them out first so, that we can reliably transmit
+random midi sequences.
+
+Being able to run this regression would certainly allow some
+assertions on the quality of the whole pipeline.
+
+---
+
+As multiple devices are present, we can validate the operation
+
+
+---
+---
+
+Eventually, the pipeline of the firmware could programmatically
+be hooked into the loopback test, also, so that one could isolate
+potential problems further.
+
+---

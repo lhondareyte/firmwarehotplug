@@ -1,0 +1,48 @@
+--- usb-midi.c.orig	2002-10-27 04:42:59.000000000 +0100
++++ usb-midi.c	2002-10-27 04:47:10.000000000 +0100
+@@ -392,9 +392,11 @@
+ 	int i, j, wake;
+ 	unsigned long int flags;
+ 
++/*
+ 	if ( !ep->urbSubmitted ) {
+ 		return;
+ 	}
++*/
+ 
+ 	if ( (urb->status == 0) && (urb->actual_length > 0) ) {
+ 		wake = 0;
+@@ -990,12 +992,13 @@
+                 m->min.ep->cables[m->min.cableId] = 0; // discard cable
+                 m->min.ep->readers -= 1;
+ 		m->open_mode &= ~FMODE_READ;
+-
++/*
+ 		if ( m->min.ep->readers == 0 &&
+                      m->min.ep->urbSubmitted ) {
+ 			m->min.ep->urbSubmitted = 0;
+ 			usb_unlink_urb(m->min.ep->urb);
+ 		}
++*/
+ 
+ 	        spin_unlock_irqrestore( &m->min.ep->lock, flagsep );
+ 	}
+@@ -1750,6 +1753,18 @@
+ 		list_add_tail( &mouts[i]->list, &s->outEndpointList );
+ 	}
+ 
++//HERE: new semantics, we always poll IN EPs
++	for ( i=0 ; i<inEndpoints ; i++ ) {
++		int status;
++		mins[i]->readers      += 1; //FIXME: Lying: one more, preventing poll stop
++		mins[i]->urb->dev = mins[i]->usbdev;
++	        status = usb_submit_urb(mins[i]->urb);
++	        if (status) {
++		        printk(KERN_ERR "usbmidi: Cannot submit urb (%d)\n",status);
++	        }
++		mins[i]->urbSubmitted = (status == 0);
++	}
++
+ 	printk(KERN_INFO "usbmidi: found [ %s ] (0x%04x:0x%04x), attached:\n", u->deviceName, u->idVendor, u->idProduct );
+ 	for ( i=0 ; i<devices ; i++ ) {
+ 		int dm = (mdevs[i]->dev_midi-2)>>4;

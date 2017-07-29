@@ -1,0 +1,8 @@
+#!/bin/sh
+
+case "$PRODUCT" in
+  763/1010/1) fxload -I /etc/hotplug/usb/ezusbmidi.ihx ;; # Midisport1x1
+  763/1001/1) fxload -I /etc/hotplug/usb/ezusbmidi.ihx ;; # Midisport2x2
+  763/1020/1) fxload -I /etc/hotplug/usb/ezusbmidi.ihx ;; # Midisport4x4
+  763/1030/1) fxload -I /etc/hotplug/usb/ezusbmidi.ihx ;; # Midisport8x8
+esac

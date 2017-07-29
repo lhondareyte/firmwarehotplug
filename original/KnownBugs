@@ -1,0 +1,107 @@
+[KnownBugs]
+
+There are a few bugs known both located in the OSS driver
+as well as in this firmware. We're currently in the process
+to track them down.
+
+
+Currently, Bug#4 and Bug#6 should be the ones most aparent
+in practice. While the later is located the first is still
+under diagnosis, but affects only 2x2 running all cables
+simultaniously using the OSS driver, so the firmware appears
+to approach production quality state eventually.
+
+
+- BUG #0 (firmware, closed, see ChangeLog)
+
+
+- BUG #1 (OSSdriver, tendencially closed)
+
+  When first opening the device, one might get old data from
+  some buffers. As MIDI is a real time infrastructure, this
+  is illegal.
+
+  One might discuss, whether the issue is located in the
+  ezusbmidi firmware or in the OSS driver. It does not appear
+  with the ALSA driver, as this one constantly polls the events
+  so that the events do not pile up in the firmware.
+
+  Because there is no real open or close in the USB world, we
+  tend that the OSS driver should be adjusted accordingly.
+
+  The patch for the OSS driver included in this directory
+  aparently fixes the problem. I will be through the pipes in
+  a bit.
+
+
+- BUG #2 (USB Stack?)
+
+  Some bytes send after reopen are dropped. As this behaviour
+  became reproducible in the ALSA after first being discovered
+  in OSS, it comes not unlikely, that it might be burried in the
+  usb-stack, somewhere.
+
+
+- BUG #3 (closed, see ChangeLog)
+
+
+
+- BUG #4 (OSSDriver?, not located)
+
+  On 2x2 when running testlb simultaniously on both cables
+  repeatingly, something like crosstalk appears.
+
+  Running the tests on only one channel apparently always
+  succeeds.  As the 1x1 has only one cable, this bug does
+  not appear there. It also appears to work well in a
+  cross-cable situation on 2x2, i.e. with writing on one
+  cable while reading on the other.
+
+  The test is not yet specific enough to describe the problem
+  precisely, thus tests isolating this problem further needs to
+  be designed.
+
+  Since testing with the ALSA failed to reproduce the problem,
+  chances are, that the firmware is not involved in this issue.
+  Futher, it might be closely connected to Bug#6 below, which
+  is about to be attacked next.
+  
+- BUG #5 (OSSdriver, not located)
+
+  Pulling the USB plug, when writing to or reading from the device
+  causes the system to lock up. Might have likely issues unloading
+  the module.
+
+  The clue is, that usb_midi_disconnect is called in response of
+  pulling the plug, while reading/writing processes sit in a wait_queue
+  or a likely structure that is deleted, which creates a dangling
+  pointers in the OSes structure. Might be more harmless, though,
+  meaning that during usb_midi_fops, structures that have been freed
+  get under access as result of the wake_up in the end of
+  usb_midi_disconnect.
+
+- BUG #6 (OSSdriver, located)
+
+  While reading a device, when the same device is opened/closed for
+  writing with a different file handle, the reading stops until the
+  devices is closed/opened again for reading.
+
+  Reason for this problem appears to be in usb_midi_release, where
+  this procedure uses m->open_mode, not clearly distinguishing whether
+  the device is opened by one file (rw) or two files (one r, one w).
+
+- BUG #7 (Not located: Firmware?, OSSDriver?)
+
+  In not too rare cases, regression/alltests.sh shows that test #1,
+  sans input condition is not asserted. This glitch should be hard
+  to recognize under normal conditions.
+
+
+* There might be more issues both in the driver(s) and the firmware.
+
+  We have designed a loop back test procedure, located and described
+  in more details in the "regression" directory. We are very dedicated
+  to assure production quality of both drivers and firmware. Until now,
+  i wouldn't rely on the stuff when recording my next album. For less
+  demanding operation you might find the material in good shape, though.
+

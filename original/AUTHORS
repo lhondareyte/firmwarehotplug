@@ -1,0 +1,13 @@
+- Lars Doelle <lars.doelle@on-line.de>
+
+  Original author of the firmware and current maintainer
+
+- NAGANO Daisuke <breeze.nagano@nifty.ne.jp>
+
+  Orinanal author of the usb-midi oss driver and contributor
+  of the Midisport 2x2 material
+
+- Pedro Lopez-Cabanillas <plcl@telefonica.net>
+
+  Codevelopment and testing of the driver and firmware.
+  Author of the regression test suit.

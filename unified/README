@@ -1,0 +1,52 @@
+[README]
+
+NOTE: You'll normally prefere to try the "Original" branch
+
+-----------------------------
+
+The material in this directory is supposed for developers,
+though you might be able to run it with some success.
+
+If you are a developer you will prefere to have a look in
+here as the code examplifies virtual all of the EZUSB chips
+abilities.
+
+The code currently sufferes mainly from some not yet identified
+bottlenecks, which dramatically reduce the speed. As soon as
+these are tracked down, the unified driver will become the
+prefered one for the devices listed below.
+
+Contrary to the "Original" branch, a unified firmware is used
+for all different devices, performing an device recognition
+process reading informations from the serial rom over the I2C bus.
+
+-----------------------------
+
+This program is a USB-MIDI complient firmware for the EZUSB chip
+(AN2131SC) developed to make USB-MIDI adaptors run with Linux.
+
+The firmware is known to support the following hardware:
+- MidiSportUNO (Midiman) : operational? (== 1x1)
+- MidiSport1x1 (Midiman) : operational
+- MidiSport2x2 (Midiman) : operational
+- USB-2-MIDI (Steinberg) : operational  (== 2x2)
+- MidiSport4x4 (Midiman) : first two ports, no leds, work in progress
+- MidiSport8x8 (Midiman) : unknown
+
+Chances are, that other EZUSB based MIDI adaptors work to some
+degree with other hardware, too. See the documentation for more
+information.
+
+All material in this directory is free software under the terms of
+the GPL Version 2.  See COPYING for the detailed rules.
+
+Patches and comments welcome.
+
+History
+- Okt. 2002 - move to hotplug cvs
+- Feb. 2002 - unified firmware
+- Jan. 2002 - hotplugging
+- Dez. 2001 - Midisport 2x2
+- Sep. 2001 - Midisport 1x1
+
+Lars Doelle <lars.doelle@on-line.de>

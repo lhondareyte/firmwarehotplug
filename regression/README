@@ -1,0 +1,271 @@
+Regression tests for usbmidi Linux driver and ezusbmidi firmware for Midiman 
+MidisportNxN USB devices.
+
+Introduction
+============
+
+This set of programs is a proposal for an automated regression test system, 
+in order to test the quality of a whole MIDI system (hw+sw) including:
+* A GNU/Linux system, with USB enabled kernel
+* The usb-midi driver for Linux
+* An USB MIDI interface hw, like the MidimanNxN device
+* The ezusbmidi firmware for MidimanNxN devices
+* A MIDI musical instrument (and MIDI cables). A synthesizer, piano, organ, 
+  or any musical keyboard with sound output.
+Note: some MIDI keyboards don't have internal sounds, for example: the 
+Roland/Edirol PC-70, PC-160, and PC-300.
+
+There are two types of tests: with a musical instrument, and without.
+
+With a musical instrument, it is possible to send data (notes) from the 
+keyboard, and receive them in its synthesizer module using the USB device 
+ports, instead of the internal connection. This makes possible for only one 
+MIDI musical instrument to test all the Midiman Midisport NxN ports. For this 
+test it is necessary to select 'LOCAL OFF' mode in the synthesizer. See the 
+'midimsg' program for details.
+
+Also it is possible to make interesting tests without a musical instrument. 
+For this loopback test, the 'lbtest' program is used to produce MIDI events, 
+send them to the USB device, receive the events from the device, and to 
+compare both sequences. This test is totally objective, whereas the tests 
+made by means of an instrument require the skill of the musician who plays it 
+and the results can be evaluated only of subjective form. Nevertheless, MIDI 
+is fundamentally a tool for musicians, thus certain artistic subjectivity can 
+not be totally inadequate in this case.
+
+To run all the tests, use this command:
+
+$ make test
+
+Preparation
+===========
+
+Connect the computer to a Midiman MidisportNxN device using a free USB port, 
+and an USB cable. Run the 'lsusb' or 'usbview' utilities to confirm that 
+everything is ok. USB enabled Linux kernel is needed, of course.
+
+Obtain the latest usbmidi driver, available at:
+http://member.nifty.ne.jp/Breeze/softwares/unix/usbmidi-e.html
+
+Inside this package (testing/MidiSport) is ezusbmidi firmware for the Midiman 
+MidisportNxN devices. Follow the README file instructions, to compile and 
+install the kernel driver and firmware. In order to compile ezusbmidi, the 
+SDCC package is needed, which is available at: http://sdcc.sourceforge.net
+
+It is possible to use Linux-hotplug utilities to comfortably handle the 
+driver and firmware loading without manual operation. See the 
+testing/Hotplugging.txt document and: http://linux-hotplug.sourceforge.net/
+
+An alternative for Linux-hotplug is EZUSB2131. See:
+http://ezusb2131.sourceforge.net
+
+Once the driver and firmware are loaded, see the kernel messages and take note 
+of the available devices, for example:
+
+# tail /var/log/messages
+
+In the following examples, it is assumed that these devices will be:
+/dev/midi1 : Midisport1x1, or the first MidisportNxN port.
+/dev/midi2 : Midisport2x2, port B.
+etc.
+
+Last, connect IN and OUT MidisportNxN MIDI ports between them using standard 
+MIDI cables for the loopback test, or to the MIDI instrument for normal use 
+or manual tests.
+
+Remember that a MIDI cable handles a one-way communication only (MIDI-OUT to 
+MIDI-IN). You will need two cables to connect a MIDI Instrument to the 
+MidisportNxN. For the loopback test, only one cable is needed.
+
+Programs
+========
+
+midimsg
+-------
+Usage: midimsg [OPTION]... [MIDI DEVICE NODE]
+Send MIDI channel mode messages to MIDI DEVICE (default=/dev/midi)
+		  -h, --help			this message
+		  -c, --channel=0..15		use only one midi channel
+		  -l, --local=on|off		local control message
+		  -m, --mode=mono|poly		mode message
+		  -o, --omni=on|off		omni message
+		  -p, --panic			same as -rs
+		  -r, --reset			reset all controllers
+		  -s, --shutup			all notes off
+		  -x, --syxreset=gm|gs|xg	system exclusive reset
+
+For example, to set the "LOCAL OFF" mode in your MIDI instrument, run
+this command:
+$ ./midimsg --local=off /dev/midi1
+
+see README.midimsg for more information
+
+midiraw
+-------
+Usage: midiraw [OPTIONS]
+Input and output raw MIDI device test
+		  -h, --help           this message
+		  -i, --input [node]   test input device
+		  -o, --output [node]  test output device
+		  -n, --noio           test open only
+		  -t, --thru           test midi thru
+		  -v, --verbose        verbose mode
+
+midispy
+-------
+Usage: midispy [MIDI DEVICE NODE]
+Default MIDI DEVICE NODE: /dev/midi
+
+testlb
+------
+Usage: testlb [OPTIONS] [-i /dev/midiIN [-o /dev/midiOUT]]
+Loopback test for MIDI devices
+		  -h, --help         this message
+		  -i, --input=NODE   test input device
+		  -o, --output=NODE  test output device
+		  -r, --repeat=#     repeat test # times
+		  -t, --test=#       select test number #
+		  -v, --verbose      verbose mode
+
+see README.testlb for more information
+
+testout.sh
+----------
+Usage: testout.sh MIDI_DEVICE_NODE
+This tests plays a single "A" note (440Hz) during 2 seconds.
+With a GM Instrument, this note should be heard with Grand Piano sound.
+
+greensleaves.sh
+---------------
+Usage: greensleaves.sh MIDI_DEVICE_NODE
+This tests plays "Greensleaves", an ancient traditional song.
+Based on a public domain score, available on:
+ftp://sca.uwaterloo.ca/pub/Mutopia/Traditional/Greensleaves/
+http://www.mutopiaproject.org/
+
+Test assembly diagrams
+======================
+
+In the following diagrams it is tried to explain the connections for MIDI 
+cables, and commands necessary to execute the tests (if you don't use the 
+automatic system). The arrows under the "Shell command" column are only 
+illustrative and don't reflect any physical connection.
+
+Loopback test with a MIDI instrument
+------------------------------------
+
+MIDI   MIDI    Midiman      Shell
+KEYB.  CABLES  Midisport1x1 Command
+
+ OUT   ----->  IN           ---\
+                               | $ cat /dev/midi1 > /dev/midi1
+  IN   <-----  OUT          <--/
+
+Use the keyboard in 'LOCAL OFF' mode, and play any song you like.
+Observe if happens that:
+a) The synthesizer module outputs sound.
+b) All the USB device LED's flash at the same time.
+c) Notes are not lost, neither extra notes sound.
+d) Retardation between the pressing of keys and sound is inappreciable.
+e) Canceling the 'cat' command (pressing ^C) should stop the sound, although 
+you continue pressing keys.
+
+Loopback test with 'lbtest' program
+-----------------------------------
+
+MIDI    Midiman      Shell
+CABLES  Midisport1x1 Command
+
+/---->  IN
+|                    $ ./testlb -i /dev/midi1 -o /dev/midi1
+\-----  OUT
+
+Though this test is basically simple, it allow full control over the device's 
+environment and, depending on the procedure, can be made very rigorous tests 
+both for the firmware and the driver.
+
+Running multiple such loopback tests the same time allows to simulate 
+multi-cable operation and different load types.
+
+2IN + 2OUT Assembly (Instrument test)
+-------------------------------------
+
+MIDI   MIDI    Midiman      Shell
+KEYB.  CABLES  Midisport2x2 Commands
+
+ OUT   ----->  IN-A         ----------------------------------\
+                                                              |
+  IN   <-----  OUT-A        <--\                              |
+                               | $cat /dev/midi2 > /dev/midi1 | (1)
+         /-->  IN-B         ---/                              |
+         |                                                    |
+         \---  OUT-B        <---------------------------------/
+                                 $cat /dev/midi1 > /dev/midi2   (2)
+
+MIDI Event flow:
+Keyb -> IN-A -> cat(2) -> OUT-B -> IN-B -> cat(1) -> OUT-A -> Synth
+
+Another 2IN + 2OUT Assembly (Instrument test)
+---------------------------------------------
+
+MIDI   MIDI    Midiman      Shell
+KEYB.  CABLES  Midisport2x2 Commands
+
+ OUT   ----->  IN-A         ---\
+                               | $ cat /dev/midi1 > /dev/midi1 (1)
+         /---  OUT-A        <--/
+         |
+         \-->  IN-B         ---\
+                               | $ cat /dev/midi2 > /dev/midi2 (2)
+ IN    <-----  OUT-B        <--/
+
+MIDI Event flow:
+Keyb -> IN-A -> cat(1) -> OUT-A -> IN-B -> cat(2) -> OUT-B -> Synth
+
+In anyone of the previous configurations, it is important to remember the 
+following things to understand the test and to avoid mistakes:
+
+a) MIDI Cables always connect a MIDI OUT port of a USB device with a MIDI IN 
+port of the same device.
+
+b) the 'cat' command always read from a MIDI IN device and write to a MIDI 
+OUT device. It does not matter that the same device node name represents them.
+
+2IN + 2OUT Assembly (loopback test)
+-----------------------------------
+
+MIDI    Midiman      Shell
+CABLES  Midisport2x2 Commands
+
+/---->  IN-A
+|                    $ ./testlb -i /dev/midi1 -o /dev/midi1
+| /---  OUT-A
+| |
+| \-->  IN-B         ---\
+|                       | $ cat /dev/midi2 > /dev/midi2
+\-----  OUT-B        <--/
+
+
+4IN + 4OUT Assembly (Instrument test)
+-------------------------------------
+
+MIDI   MIDI    Midiman      Shell
+KEYB.  CABLES  Midisport4x4 Commands
+
+ OUT   ----->  IN-A         ---\
+                               | $ cat /dev/midi1 > /dev/midi1
+         /---  OUT-A        <--/
+         |
+         \-->  IN-B         ---\
+                               | $ cat /dev/midi2 > /dev/midi2
+         /---  OUT-B        <--/
+         |
+         \-->  IN-C         ---\
+                               | $ cat /dev/midi3 > /dev/midi3
+         /---  OUT-C        <--/
+         |
+         \-->  IN-D         ---\
+                               | $ cat /dev/midi4 > /dev/midi4
+ IN    <-----  OUT-D        <--/
+
+
