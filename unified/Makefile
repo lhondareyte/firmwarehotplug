@@ -19,3 +19,12 @@ clean:
 
 install:
 	echo "unified firmware not installed (for now)."
+
+freebsd-install:
+	@pkg info fxload > /dev/null 2>&1 || (echo "Error: fxload not present"; exit 1)
+	@mkdir -p /usr/local/etc/devd
+	@mkdir -p /usr/local/share/fxload/m-audio
+	@install -m 644 -o root -g wheel ezusbmidi.ihx /usr/local/share/fxload/m-audio/
+	@install -m 644 -o root -g wheel freebsd.conf /usr/local/etc/devd/m-audio.conf
+	@service devd restart
+
