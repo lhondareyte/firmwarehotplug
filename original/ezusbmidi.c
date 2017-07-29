@@ -64,7 +64,7 @@ static xdata at 0x7e40 byte          outusbBuf[0x40]; // OUT1BUF
 // UART (0) -> EP 1 pipeline
 
 static volatile data  struct CYCSYN  inserCtl;        // UART->serial
-static xdata  at 0x7b80              inserBuf[0x40];  // IN7BUF
+static xdata  at 0x7b80 byte         inserBuf[0x40];  // IN7BUF
 
 static volatile data  struct CYCSYN  outserCtl;       // serial->UART
 static xdata at 0x7b40 byte          outserBuf[0x40]; // OUT7BUF, tmp
@@ -76,7 +76,7 @@ static volatile data  struct LINSYN  outuarCtl;       // -> UART
 // UART (1) -> EP 1 pipeline
 
 static volatile data  struct CYCSYN  inserCtl1;        // UART->serial
-static xdata  at 0x7c00              inserBuf1[0x40];  // IN7BUF
+static xdata  at 0x7c00 byte         inserBuf1[0x40];  // IN7BUF
 
 // EP 1 OUT -> UART (1) IN pipeline
 

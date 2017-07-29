@@ -21,6 +21,17 @@
  *
  */
 
+#define AT(X) __at X
+#define code __code
+#define xdata __xdata
+#define data __data
+#define sbit __sbit
+#define sfr __sfr
+#define at __at
+#define bit __bit
+#define interrupt __interrupt
+#define using __using
+
 typedef unsigned char byte;
 
 sbit  at 0x8c TR0; // TCON.4
