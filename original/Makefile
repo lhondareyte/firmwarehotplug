@@ -1,15 +1,17 @@
 VERSION = $(shell date +%Y_%m_%d)
 RELEASE_NAME =	ezusbmidi-$(VERSION)
 
-all: ezusbmidi1x1.ihx ezusbmidi2x2.ihx ezusbmidi.html ezusbmidi.ps
+all: ezusbmidi1x1.ihx ezusbmidi2x2.ihx 
+
+doc: ezusbmidi.html ezusbmidi.ps
 
 ezusbmidi1x1.ihx: ezusbmidi.c ezusb_reg.h bufsync.h
-	rm -rf sdcc; mkdir sdcc; cp $^ sdcc
-	cd sdcc; sdcc -DCONFIG_MidiSport1x1 -I. $<; packihx ezusbmidi.ihx > ../$@
+	rm -rf build; mkdir build; cp $^ build
+	cd build; build -DCONFIG_MidiSport1x1 -I. $<; packihx ezusbmidi.ihx > ../$@
 
 ezusbmidi2x2.ihx: ezusbmidi.c ezusb_reg.h bufsync.h
-	rm -rf sdcc; mkdir sdcc; cp $^ sdcc
-	cd sdcc; sdcc -DCONFIG_MidiSport2x2  -I. $<; packihx ezusbmidi.ihx > ../$@
+	rm -rf build; mkdir sdcc; cp $^ build
+	cd build; sdcc -DCONFIG_MidiSport2x2  -I. $<; packihx ezusbmidi.ihx > ../$@
 
 ezusbmidi.ps: ezusbmidi.sgml descriptor.png
 	sgml2latex --output=ps $<
@@ -27,7 +29,7 @@ deb-release:
 	fakeroot dpkg-buildpackage
 
 clean:
-	rm -rf sdcc
+	rm -rf build
 	rm -f [1-9] *.pdf *.html *.ps *.ihx *.tar.gz *.tar.bz2 ezusbmidi.spec
 	rm -rf debian/ezusbmidi debian/files build-stamp configure-stamp
 
@@ -60,3 +62,12 @@ release: clean $(DISTFILES)
 	@tar -c $(DISTDIR) | bzip2 -9 > $(RELEASE_NAME).tar.bz2
 	@rm -rf $(DISTDIR)
 	@echo "Built $(RELEASE_NAME).tar.bz2"
+
+freebsd-install:
+	@pkg info fxload > /dev/null 2>&1 || (echo "Error: fxload not present"; exit 1)
+	@mkdir -p /usr/local/etc/devd
+	@mkdir -p /usr/local/share/fxload/m-audio
+	@install -m 644 -o root -g wheel ezusbmidi1x1.ihx /usr/local/share/fxload/m-audio/
+	@install -m 644 -o root -g wheel ezusbmidi2x2.ihx /usr/local/share/fxload/m-audio/
+	@install -m 644 -o root -g wheel freebsd.conf /usr/local/etc/devd/m-audio.conf
+	@service devd restart
