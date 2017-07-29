@@ -1,16 +1,17 @@
 SUBDIRS=original regression unified
+MAKE = gmake
 
 all:
 	@for DIR in $(SUBDIRS); do	\
-		make -C $$DIR all;	\
+		$(MAKE) -C $$DIR all;	\
 	done
 
 clean:
 	@for DIR in $(SUBDIRS); do	\
-		make -C $$DIR clean;	\
+		$(MAKE) -C $$DIR clean;	\
 	done
 
 install:
 	@for DIR in $(SUBDIRS); do	\
-		make -C $$DIR install;	\
+		$(MAKE) -C $$DIR install;	\
 	done

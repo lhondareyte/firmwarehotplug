@@ -7,11 +7,13 @@ doc: ezusbmidi.html ezusbmidi.ps
 
 ezusbmidi1x1.ihx: ezusbmidi.c ezusb_reg.h bufsync.h
 	rm -rf build; mkdir build; cp $^ build
-	cd build; build -DCONFIG_MidiSport1x1 -I. $<; packihx ezusbmidi.ihx > ../$@
+	cd build; sdcc -DCONFIG_MidiSport1x1 -I. $<; packihx ezusbmidi.ihx > ../$@
+	cd ..
 
 ezusbmidi2x2.ihx: ezusbmidi.c ezusb_reg.h bufsync.h
-	rm -rf build; mkdir sdcc; cp $^ build
+	rm -rf build; mkdir build; cp $^ build
 	cd build; sdcc -DCONFIG_MidiSport2x2  -I. $<; packihx ezusbmidi.ihx > ../$@
+	cd ..
 
 ezusbmidi.ps: ezusbmidi.sgml descriptor.png
 	sgml2latex --output=ps $<
