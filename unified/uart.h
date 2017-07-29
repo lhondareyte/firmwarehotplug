@@ -3,6 +3,15 @@
 #define UART_H
 
 #include <ezusb_reg.h>
+#include <ezusbmidi.h>
+#define AT(X) __at X
+#define code __code
+#define xdata __xdata
+#define sbit __sbit
+#define sfr __sfr
+#define at __at
+#define interrupt __interrupt
+#define using __using
 
 struct Uart
 {
@@ -10,7 +19,7 @@ struct Uart
   byte ri;
 };
 
-extern struct Uart uart[4];
+extern struct Uart uart[MAX_PORTS];
 
 byte getPortData(byte port);
 void putPortData(byte port, byte dta);

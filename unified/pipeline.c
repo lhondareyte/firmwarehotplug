@@ -38,9 +38,6 @@ struct Pipe
   // Variables for the USB-MIDI -> MIDI transducer
   //
   byte RunningStatus; //  = 0;
-  //
-  //
-  //
   byte cid; // Cabel Id
 };
 

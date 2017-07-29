@@ -3,6 +3,13 @@
 
 #ifndef EZUSB_REG_H
 #define EZUSB_REG_H
+#define AT(X) __at X
+#define code __code
+#define xdata __xdata
+#define sbit __sbit
+#define sfr __sfr
+#define at __at
+#define bit __bit
 
 typedef unsigned char byte;
 

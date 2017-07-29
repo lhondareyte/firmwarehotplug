@@ -2,10 +2,10 @@ CFLAGS=--model-large -I. # --stack-after-data
 all: ezusbmidi.ihx
 
 ezusbmidi.ihx: ezusbmidi.c ezusb_reg.h bufsync.h uart.c uart.h ep0.c desc.c desc.h ep0.h pipeline.c pipeline.h leds.h Makefile ezusbmidi.h
-	rm -rf sdcc;\
-	 mkdir sdcc;\
-	 cp $^ sdcc;\
-	 cd sdcc;\
+	rm -rf build;\
+	 mkdir build;\
+	 cp $^ build;\
+	 cd build;\
 	 sdcc -c $(CFLAGS) desc.c;\
 	 sdcc -c $(CFLAGS) pipeline.c;\
 	 sdcc -c $(CFLAGS) ep0.c;\
@@ -15,7 +15,7 @@ ezusbmidi.ihx: ezusbmidi.c ezusb_reg.h bufsync.h uart.c uart.h ep0.c desc.c desc
 	 packihx ezusbmidi.ihx > ../$@
 
 clean:
-	rm -rf sdcc [1-9] ezusbmidi.ihx
+	rm -rf build [1-9] ezusbmidi.ihx
 
 install:
 	echo "unified firmware not installed (for now)."

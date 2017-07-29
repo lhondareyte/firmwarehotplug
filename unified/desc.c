@@ -5,13 +5,12 @@
 
 #ifdef STAND_ALONE
 typedef unsigned char byte;
-#define code
-#define xdata
-#define AT(X)
 #else
 #include <ezusb_reg.h>
-#define AT(X) at X
 #endif
+#define AT(X) __at X
+#define code __code
+#define xdata __xdata
 
 #define EMBEDDED 0x01
 #define EXTERNAL 0x02
