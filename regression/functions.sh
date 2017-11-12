@@ -40,7 +40,7 @@ function module_info() {
 
 function makelist() {
 	unset LISTDEV
-	for D in /dev/midi*; do
+	for D in /dev/*midi*; do
 		./midiraw $1 $D && LISTDEV="$LISTDEV $D";
 	done
 }
