@@ -5,14 +5,13 @@ This repository is fork of the [firmwarehotplug project](https://sourceforge.net
 Official M-AUDIO firmwares are available on most Linux distros. Unfortunately, it does not work with the ```fxload``` version of FreeBSD. This open source version solve the problem.
 
 ## Which version?
-There are two flavours of firmware: original and unified. Original version contains firmwares for Midiman 1x1 or 2x2 interfaces. The unified version contains one unique firmware that is known to support the following interfaces:
+There are two flavours of firmware: original and unified. Original version contains firmwares for Midiman 1x1 and 2x2 interfaces. The unified version contains one unique firmware that is known to support the following interfaces:
 ```
 * MidiSportUNO (Midiman) : operational (= 1x1)
 * MidiSport1x1 (Midiman) : operational
 * MidiSport2x2 (Midiman) : operational
 * USB-2-MIDI (Steinberg) : operational (= 2x2)
-* MidiSport4x4 (Midiman) : first two ports operational, no leds, work in progres
-s
+* MidiSport4x4 (Midiman) : first two ports operational, no leds, work in progress
 * MidiSport8x8 (Midiman) : unknown, perhaps like 4x4
 ```
 Original version is recommended by the authors.
