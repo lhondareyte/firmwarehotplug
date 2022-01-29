@@ -29,4 +29,7 @@ Plug your USB interface, you should have one device per MIDI port available:
 ls -l /dev/umidi*
 crw-r--r--  1 root  operator  0x6d Jul 29 12:15 /dev/umidi0.0
 crw-r--r--  1 root  operator  0x6e Jul 29 12:15 /dev/umidi0.1
+
+## Port
+For convenience, a port [is available here](https://github.com/lhondareyte/ports/tree/master/firmwarehotplug).
 ```
