@@ -1,18 +1,20 @@
-VERSION = $(shell date +%Y_%m_%d)
-RELEASE_NAME =	ezusbmidi-$(VERSION)
+VERSION      = $$(date +%Y_%m_%d)
+RELEASE_NAME = ezusbmidi-$(VERSION)
+SOURCES      = ezusbmidi.c
+HEADERS      = ezusb_reg.h bufsync.h
 
 all: ezusbmidi1x1.ihx ezusbmidi2x2.ihx 
 
 doc: ezusbmidi.html ezusbmidi.ps
 
-ezusbmidi1x1.ihx: ezusbmidi.c ezusb_reg.h bufsync.h
-	rm -rf build; mkdir build; cp $^ build
-	cd build; sdcc -DCONFIG_MidiSport1x1 -I. $<; packihx ezusbmidi.ihx > ../$@
+ezusbmidi1x1.ihx: $(SOURCES) $(HEADERS)
+	rm -rf build; mkdir build; cp $(SOURCES) $(HEADERS) build
+	cd build; sdcc -DCONFIG_MidiSport1x1 -I. $(SOURCES); packihx ezusbmidi.ihx > ../$@
 	cd ..
 
-ezusbmidi2x2.ihx: ezusbmidi.c ezusb_reg.h bufsync.h
-	rm -rf build; mkdir build; cp $^ build
-	cd build; sdcc -DCONFIG_MidiSport2x2  -I. $<; packihx ezusbmidi.ihx > ../$@
+ezusbmidi2x2.ihx: $(SOURCES) $(HEADERS)
+	rm -rf build; mkdir build; cp $(SOURCES) $(HEADERS) build
+	cd build; sdcc -DCONFIG_MidiSport2x2 -I. $(SOURCES); packihx ezusbmidi.ihx > ../$@
 	cd ..
 
 ezusbmidi.ps: ezusbmidi.sgml descriptor.png
@@ -43,7 +45,7 @@ install:
 	install -m644 ezusbmidi1x1.ihx $(DESTDIR)/usr/share/usb/ezusbmidi
 	install -m644 ezusbmidi2x2.ihx $(DESTDIR)/usr/share/usb/ezusbmidi
 
-DISTFILES = $(shell find . \( -not -name '.' \) -print | grep -v CVS | grep -v "\.tar\.bz2" | grep -v "\.tar\.gz" | grep -v "\/\." | grep -v releases | grep -v BitKeeper | grep -v SCCS ) ezusbmidi.spec
+DISTFILES = $$(find . \( -not -name '.' \) -print | grep -v CVS | grep -v "\.tar\.bz2" | grep -v "\.tar\.gz" | grep -v "\/\." | grep -v releases | grep -v BitKeeper | grep -v SCCS ) ezusbmidi.spec
 DISTDIR=$(RELEASE_NAME)
 
 ezusbmidi.spec: ezusbmidi.spec.in

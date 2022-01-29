@@ -1,10 +1,13 @@
-CFLAGS=--model-large -I. # --stack-after-data
+CFLAGS  = --model-large -I. # --stack-after-data
+SOURCES = ezusbmidi.c uart.c ep0.c desc.c pipeline.c ezusbmidi.h
+HEADERS = ezusb_reg.h bufsync.h uart.h desc.h ep0.h pipeline.h leds.h ezusbmidi.h
+
 all: ezusbmidi.ihx
 
-ezusbmidi.ihx: ezusbmidi.c ezusb_reg.h bufsync.h uart.c uart.h ep0.c desc.c desc.h ep0.h pipeline.c pipeline.h leds.h Makefile ezusbmidi.h
+ezusbmidi.ihx: Makefile $(SOURCES) $(HEADERS)
 	rm -rf build;\
 	 mkdir build;\
-	 cp $^ build;\
+	 cp $(SOURCES) $(HEADERS) build;\
 	 cd build;\
 	 sdcc -c $(CFLAGS) desc.c;\
 	 sdcc -c $(CFLAGS) pipeline.c;\

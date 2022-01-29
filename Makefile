@@ -1,5 +1,5 @@
-SUBDIRS=original regression unified
-MAKE = gmake
+SUBDIRS = original regression unified
+MAKE    = make
 
 all:
 	@for DIR in $(SUBDIRS); do	\
