@@ -2,3 +2,7 @@ original/build/*
 original/*ihx
 unified/build/*
 unified/*ihx
+regression/midimsg
+regression/midiraw
+regression/midispy
+regression/testlb
