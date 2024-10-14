@@ -217,13 +217,13 @@ static void isrWakeup() //interrupt FIXME: reactivate
 }
 
 #if HAS_TIMER_0
-static void isrTime0() interrupt 1 using 1 //critical // 244 Hz
+static void isrTime0() __interrupt(1) __using(1) //critical // 244 Hz
 {
   if (++timerTicksL == 0) ++timerTicksH;
 }
 #endif
 
-static void isrUart0() interrupt 4 using 1 //critical
+static void isrUart0() __interrupt(4) __using(1) //critical
 {
   if (TI_0)
   {
@@ -240,7 +240,7 @@ static void isrUart0() interrupt 4 using 1 //critical
 }
 
 #ifdef CONFIG_MidiSport2x2
-static void isrUart1() interrupt 7 using 2 //critical
+static void isrUart1() __interrupt(7) __using(2) //critical
 {
   if (TI_1)
   {
@@ -260,7 +260,7 @@ static void isrUart1() interrupt 7 using 2 //critical
 //FIXME: we should properly stall EP0 SETUP
 //       if we did not complete processing SETUP
 
-static void isrUsb(void) interrupt 8 using 3 //critical
+static void isrUsb(void) __interrupt(8) __using(3) //critical
 {
    EXIF &= 0xef; // clear INT2 interrupt
    if (  USBIRQ & 0x01) {   USBIRQ = 0x01; bitSUDAVSeen = 1;       } // Setup Data avail

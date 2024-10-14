@@ -247,7 +247,7 @@ static bit ep1_ti;
 static bit bitSUDAVSeen = 0;
 static bit bitSUSPSeen  = 0;
 
-static void isrUsb(void) interrupt 8 using 3
+static void isrUsb(void) __interrupt(8) __using(3)
 {
    EXIF &= 0xef; // clear INT2 interrupt
    if (  USBIRQ & 0x01) {   USBIRQ = 0x01; bitSUDAVSeen = 1; } // Setup  data avail

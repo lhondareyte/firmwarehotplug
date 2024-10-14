@@ -10,8 +10,6 @@
 #define sbit __sbit
 #define sfr __sfr
 #define at __at
-#define interrupt __interrupt
-#define using __using
 
 struct Uart
 {
@@ -25,9 +23,9 @@ byte getPortData(byte port);
 void putPortData(byte port, byte dta);
 void initSerial();
 
-void isrUart0() interrupt  4 using 2;
-void isrUart1() interrupt  7 using 2;
-void isrUart2() interrupt 10 using 2; // 4x4 PortA
-void isrUart3() interrupt 12 using 2; // 4x4 PortB
+void isrUart0() __interrupt(4) __using(2);
+void isrUart1() __interrupt(7) __using(2);
+void isrUart2() __interrupt(10) __using(2); // 4x4 PortA
+void isrUart3() __interrupt(12) __using(2); // 4x4 PortB
 
 #endif

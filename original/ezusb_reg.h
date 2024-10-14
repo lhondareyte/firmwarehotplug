@@ -29,8 +29,6 @@
 #define sfr __sfr
 #define at __at
 #define bit __bit
-#define interrupt __interrupt
-#define using __using
 
 typedef unsigned char byte;
 

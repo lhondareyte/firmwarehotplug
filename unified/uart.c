@@ -69,14 +69,14 @@ void putPortData(byte port, byte dta)
 
 extern void isrUartBottom(byte port); //FIXME: TESTING
 
-void isrUart0() interrupt 4 using 2
+void isrUart0() __interrupt(4) __using(2)
 {
   if (TI_0) { TI_0 = 0; uart[0].ti = 1; }
   if (RI_0) { RI_0 = 0; uart[0].ri = 1; }
   isrUartBottom(0);
 }
 
-void isrUart1() interrupt 7 using 2
+void isrUart1() __interrupt(7) __using(2)
 {
   if (TI_1) { TI_1 = 0; uart[1].ti = 1; }
   if (RI_1) { RI_1 = 0; uart[1].ri = 1; }
@@ -85,7 +85,7 @@ void isrUart1() interrupt 7 using 2
 
 //FIXME: make sure interrupts 10,12 are enabled in ezusbmidi.c
 
-void isrUart2() interrupt 10 using 2 // PortA
+void isrUart2() __interrupt(10) __using(2) // PortA
 {
   switch (portA.ctrl.fcr_isr & 0x0f)
   {
@@ -95,7 +95,7 @@ void isrUart2() interrupt 10 using 2 // PortA
   isrUartBottom(2);
 }
 
-void isrUart3() interrupt 12 using 2 // PortB
+void isrUart3() __interrupt(12) __using(2) // PortB
 {
   switch (portB.ctrl.fcr_isr & 0x0f)
   {
