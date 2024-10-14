@@ -5,9 +5,9 @@
 
 #include <ezusb_reg.h>
 
-void doSETUP();
-void ReEnumberate();
-void doSuspend();
-void initEP0();
+void doSETUP(void);
+void ReEnumberate(void);
+void doSuspend(void);
+void initEP0(void);
 
 #endif

@@ -95,7 +95,7 @@ static data byte configuration; // 1 if in configured state
 //
 // ///////////////////////////////////////////////////////////////////////
 
-void initUSB()
+void initUSB(void)
 {
   // init USB core //FIXME: set proper values
 
@@ -122,7 +122,7 @@ void initUSB()
   CPUCS     = 0x02; // CLK24OE
 }
 
-void initPorts()
+void initPorts(void)
 {
   // init LED ports, direct UART Rx/Tx to pins.
 
@@ -163,7 +163,7 @@ void initTimer()
 }
 #endif
 
-void initSerial()
+void initSerial(void)
 {
   // init UART0 (mode X) baud rate by timer 1 (mode X)
 
@@ -188,7 +188,7 @@ void initSerial()
 #endif
 }
 
-static void initPipes()
+static void initPipes(void)
 {
   CYCINIT(inserCtl);
   LININIT(inusbCtl);
@@ -211,19 +211,19 @@ static void initPipes()
 // ////////////////////////////////////////////////////////
 // FIXME: check register banks (using)
 
-static void isrWakeup() //interrupt FIXME: reactivate
+static void isrWakeup(void) //interrupt FIXME: reactivate
 {
   EICON &= 0xef;
 }
 
 #if HAS_TIMER_0
-static void isrTime0() __interrupt(1) __using(1) //critical // 244 Hz
+static void isrTime0(void) __interrupt(1) __using(1) //critical // 244 Hz
 {
   if (++timerTicksL == 0) ++timerTicksH;
 }
 #endif
 
-static void isrUart0() __interrupt(4) __using(1) //critical
+static void isrUart0(void) __interrupt(4) __using(1) //critical
 {
   if (TI_0)
   {
@@ -240,7 +240,7 @@ static void isrUart0() __interrupt(4) __using(1) //critical
 }
 
 #ifdef CONFIG_MidiSport2x2
-static void isrUart1() __interrupt(7) __using(2) //critical
+static void isrUart1(void) __interrupt(7) __using(2) //critical
 {
   if (TI_1)
   {
@@ -348,7 +348,7 @@ static code byte Descriptors[] =
 static bit bitRemoteWakeup = 0; // deactivated at reset
 
 #define EP2EP(EP) ((((EP)>>4)&0x08)|(EP)&0x07)
-static void ctrlGetStatus()
+static void ctrlGetStatus(void)
 {
   switch (SETUPDAT.bmRequest)
   {
@@ -379,14 +379,14 @@ static void ctrlGetStatus()
 // - STALL/BC/HSNAK cleanups
 // - Behaviour cleanups
 
-static void ctrlGetConfiguration()
+static void ctrlGetConfiguration(void)
 {
   IN0BUF[0] = configuration;
   IN0BC = 0x01;
   EP0CS = HSNAK; // Acknowledge Control transfer
 }
 
-static void ctrlGetInterface()
+static void ctrlGetInterface(void)
 {
   //FIXME: issue stall if not in configured state
   IN0BUF[0] = 0;
@@ -394,7 +394,7 @@ static void ctrlGetInterface()
   EP0CS = HSNAK; // Acknowledge Control transfer
 }
 
-static void ctrlSetConfiguration()
+static void ctrlSetConfiguration(void)
 {
   //FIXME: issue stall if configuration not in {0,1}
   configuration = SETUPDAT.wValueL&1;
@@ -402,7 +402,7 @@ static void ctrlSetConfiguration()
   EP0CS = HSNAK; // Acknowledge Control transfer
 }
 
-static void ctrlSetInterface()
+static void ctrlSetInterface(void)
 {
   //FIXME: issue stall on invalid arguments
 //       0 == SETUPDAT.wIndexL; // interface
@@ -411,7 +411,7 @@ static void ctrlSetInterface()
   EP0CS = HSNAK; // Acknowledge Control transfer
 }
 
-static void ctrlClearFeature()
+static void ctrlClearFeature(void)
 {
   switch (SETUPDAT.bmRequest)
   {
@@ -437,7 +437,7 @@ static void ctrlClearFeature()
   }
 }
 
-static void ctrlSetFeature()
+static void ctrlSetFeature(void)
 {
   switch (SETUPDAT.bmRequest) // SETUPDAT.bmRequest
   {
@@ -463,7 +463,7 @@ static void ctrlSetFeature()
   }
 }
 
-static void ctrlGetDescriptor()
+static void ctrlGetDescriptor(void)
 {
   unsigned int p;
   byte key   = SETUPDAT.wValueH;
@@ -484,7 +484,7 @@ static void ctrlGetDescriptor()
 //EP0CS = STALL; // Acknowledge Control transfer
 }
 
-static void doSETUP()
+static void doSETUP(void)
 {
   switch  (SETUPDAT.bRequest)
   {
@@ -534,7 +534,7 @@ static byte msgLen(byte cmd)
   return cmd < 0xf0 ? msgLenA[(cmd>>4)-8] : msgLenB[cmd&0x0f];
 }
 
-static byte cin()
+static byte cin(void)
 {
   if (curCmd  < 0xf0) return (curCmd>>4);
   if (curCmd == 0xf0) return 4 + ((msgBuf[msgCnt-1] == 0xf7) ? msgCnt : 0);
@@ -577,7 +577,7 @@ static void processByte(byte cc, byte cid)
 //       an earlier attempt to setup a controlling structure with a lot pointer
 //       badly failed. We code in C, but for an 8 bit processor with very few ram.
 
-static byte cin1()
+static byte cin1(void)
 {
   if (curCmd1  < 0xf0) return (curCmd1>>4);
   if (curCmd1 == 0xf0) return 4 + ((msgBuf1[msgCnt1-1] == 0xf7) ? msgCnt1 : 0);
@@ -628,7 +628,7 @@ static void processByte1(byte cc, byte cid)
 
 // SBUF -> Ser -> ParserState -> USB
 
-static void transSer2Usb()
+static void transSer2Usb(void)
 {
   while ( LINCANWRITE(inusbCtl) && !BUFEMPTY(inserCtl) && !BUFFULL(inusbCtl))
   { byte dta = inserBuf[BUFGET(inserCtl)];
@@ -656,7 +656,7 @@ static byte runningStatus  = 0;
 static byte runningStatus1 = 0;
 #endif
 
-static void transUsb2Ser()
+static void transUsb2Ser(void)
 {
 #ifdef CONFIG_MidiSport1x1
   if( LINCANREAD(outusbCtl) && !BUFEMPTY(outusbCtl) && !BUFFULL(outserCtl) )
@@ -687,7 +687,7 @@ static void transUsb2Ser()
   }
 }
 
-static void transSer2Uar()
+static void transSer2Uar(void)
 { // SERIAL -> UART
   if (!BUFEMPTY(outserCtl) && LINCANWRITE(outuarCtl))
   {
@@ -722,7 +722,7 @@ static void SpinDelay(unsigned int count)
   while(count > 0) count -= 1;
 }
 
-static void ReEnumberate()
+static void ReEnumberate(void)
 {
   USBCS &= ~0x04;
   USBCS |=  0x08;
@@ -732,7 +732,7 @@ static void ReEnumberate()
   USBCS |=  0x04;
 }
 
-static void doSuspend()
+static void doSuspend(void)
 {
   USBBAV |= 0x08;
   do
@@ -752,7 +752,7 @@ static void doSuspend()
 
 // ------------------------
 
-static void setLeds()
+static void setLeds(void)
 {
   ledUSB = (USBFRAMEH>>2) == ( (((USBFRAMEH<<3)|(USBFRAMEL>>5))&0x1f)
                              > (USBFRAMEL&0x1f) );
@@ -779,7 +779,7 @@ static void setLeds()
 //
 // //////////////////////////////////////////////////////
 
-void main() // Never Terminates
+void main(void) // Never Terminates
 {
   configuration = 0;
 

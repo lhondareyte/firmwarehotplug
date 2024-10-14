@@ -38,10 +38,10 @@ xdata byte leds[MAX_LEDS]; //FIXME: where to put this one?
 
 xdata byte eeprom[8];
 
-static void wait_stop() { while( I2CS & 0x40 ); }
-static void wait_done() { while( !(I2CS & 0x01)); }
+static void wait_stop(void) { while( I2CS & 0x40 ); }
+static void wait_done(void) { while( !(I2CS & 0x01)); }
 
-static void getEEProm()
+static void getEEProm(void)
 { byte i;
   for (i = 0; i < 8; i++) eeprom[i] = 0; // prefill eeprom with all 0
   if ((I2CS & 0x18) != 0x08) return;     // no 8 bit addr EEProm present
@@ -143,7 +143,7 @@ static code struct Device devices[] =
 
 static code struct Device* device;
 
-void findDevice()
+void findDevice(void)
 { xdata struct EEPromData* eedata = (xdata struct EEPromData*)(eeprom+1);
   byte i;
   for (i = 0; i < DEV_CNT-1; i++)
@@ -153,7 +153,7 @@ void findDevice()
   device = &devices[i];
 }
 
-void initPins()
+void initPins(void)
 {
   // init LED ports, direct UART Rx/Tx to pins.
   PORTCCFG  = device->pins[0]; // 0000 0011 - alternate
@@ -168,7 +168,7 @@ void initPins()
 }
 
 #if 1
-static void setLeds()
+static void setLeds(void)
 { byte i; byte bits;
   ledUSB = (USBFRAMEH>>2) == ( (((USBFRAMEH<<3)|(USBFRAMEL>>5))&0x1f)
                              > (USBFRAMEL&0x1f) );
@@ -179,7 +179,7 @@ static void setLeds()
 }
 #else
 static byte code power2[] = { 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80 };
-static void setLeds()
+static void setLeds(void)
 { byte i; byte bits[3];
   ledUSB = (USBFRAMEH>>2) == ( (((USBFRAMEH<<3)|(USBFRAMEL>>5))&0x1f)
                              > (USBFRAMEL&0x1f) );
@@ -211,7 +211,7 @@ static void setLeds()
 
 
 static unsigned int timerTicks;
-void initTimer()
+void initTimer(void)
 {
   // init TIMER 0 (not really needed)
 
@@ -224,7 +224,7 @@ void initTimer()
   timerTicks = 0; // ca  1/4 ms counter
 }
 
-static void isrTime0() interrupt 1 using 1 // 244 Hz
+static void isrTime0(void) __interrupt(1) __using(1) // 244 Hz
 {
   timerTicks += 1;
 }
@@ -265,7 +265,7 @@ static void isrUsb(void) __interrupt(8) __using(3)
 //
 // ///////////////////////////////////////////////////////////////////////
 
-void initUSB()
+void initUSB(void)
 {
   // init USB core //FIXME: set proper values
 
@@ -298,13 +298,13 @@ void initUSB()
 //
 // //////////////////////////////////////////////////////
 
-byte _sdcc_external_startup()
+byte __sdcc_external_startup(void)
 {
   ISOCTL |= 1; // ISODISAB = 1; // make xdata memory available at 0x2000 .. 0x27ff
   return 0;
 }
 
-void Configure()
+void Configure(void)
 {
   getEEProm();
   findDevice();
@@ -321,7 +321,7 @@ void Configure()
   EA = 1;
 }
 
-void main() // Never Terminates
+void main(void) // Never Terminates
 {
 
   Configure();

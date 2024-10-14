@@ -21,11 +21,11 @@ extern struct Uart uart[MAX_PORTS];
 
 byte getPortData(byte port);
 void putPortData(byte port, byte dta);
-void initSerial();
+void initSerial(void);
 
-void isrUart0() __interrupt(4) __using(2);
-void isrUart1() __interrupt(7) __using(2);
-void isrUart2() __interrupt(10) __using(2); // 4x4 PortA
-void isrUart3() __interrupt(12) __using(2); // 4x4 PortB
+void isrUart0(void) __interrupt(4) __using(2);
+void isrUart1(void) __interrupt(7) __using(2);
+void isrUart2(void) __interrupt(10) __using(2); // 4x4 PortA
+void isrUart3(void) __interrupt(12) __using(2); // 4x4 PortB
 
 #endif

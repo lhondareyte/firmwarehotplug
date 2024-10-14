@@ -120,12 +120,12 @@ void isrUartBottom(byte port)
   }
 }
 
-void doEP1_ri()
+void doEP1_ri(void)
 { 
   outusbCtl.wrt = OUT1BC; LINWRTDONE(outusbCtl);
 }
 
-void doEP1_ti()
+void doEP1_ti(void)
 {
   LINRDRDONE(inusbCtl);
 }

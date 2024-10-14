@@ -15,7 +15,7 @@
 static byte bitRemoteWakeup; // = 0; // deactivated at reset
 
 #define EP2EP(EP) ((((EP)>>4)&0x08)|(EP)&0x07)
-static void ctrlGetStatus()
+static void ctrlGetStatus(void)
 {
   switch (SETUPDAT.bmRequest)
   {
@@ -48,14 +48,14 @@ static void ctrlGetStatus()
 
 static byte configuration; // 1 if in configured state
 
-static void ctrlGetConfiguration()
+static void ctrlGetConfiguration(void)
 {
   IN0BUF[0] = configuration;
   IN0BC = 0x01;
   EP0CS = HSNAK; // Acknowledge Control transfer
 }
 
-static void ctrlGetInterface()
+static void ctrlGetInterface(void)
 {
   //FIXME: issue stall if not in configured state
   IN0BUF[0] = 0;
@@ -63,14 +63,14 @@ static void ctrlGetInterface()
   EP0CS = HSNAK; // Acknowledge Control transfer
 }
 
-static void ctrlSetConfiguration()
+static void ctrlSetConfiguration(void)
 {
   //FIXME: issue stall if configuration > 1 (we should accept 0,1)
   configuration = SETUPDAT.wValueL; // alternate
   EP0CS = HSNAK; // Acknowledge Control transfer
 }
 
-static void ctrlSetInterface()
+static void ctrlSetInterface(void)
 {
   //FIXME: issue stall on invalid arguments
 //       0 == SETUPDAT.wIndexL; // interface
@@ -78,7 +78,7 @@ static void ctrlSetInterface()
   EP0CS = HSNAK; // Acknowledge Control transfer
 }
 
-static void ctrlClearFeature()
+static void ctrlClearFeature(void)
 {
   switch (SETUPDAT.bmRequest)
   {
@@ -104,7 +104,7 @@ static void ctrlClearFeature()
   }
 }
 
-static void ctrlSetFeature()
+static void ctrlSetFeature(void)
 {
   switch (SETUPDAT.bmRequest) // SETUPDAT.bmRequest
   {
@@ -139,7 +139,7 @@ static xdata byte* findDescriptor(byte key, byte index)
   return 0;
 }
 
-static void ctrlGetDescriptor()
+static void ctrlGetDescriptor(void)
 { xdata byte* d = findDescriptor(SETUPDAT.wValueH,SETUPDAT.wValueL);
   if (!d) { EP0CS = STALL; return; }
   SUDPTRH = (byte)((((unsigned int)d))>>8)&0xff;
@@ -149,14 +149,14 @@ static void ctrlGetDescriptor()
 
 // Diagnostics for I2C material
 
-static void ctrlDiagnostics()
+static void ctrlDiagnostics(void)
 { byte i; extern xdata byte eeprom[];
   for (i = 0; i < 8; i++) IN0BUF[i] = eeprom[i];
   IN0BC = 0x08;
   EP0CS = HSNAK; // Acknowledge Control transfer
 }
 
-void doSETUP()
+void doSETUP(void)
 {
   switch  (SETUPDAT.bRequest)
   {
@@ -193,7 +193,7 @@ static void SpinDelay(unsigned int count)
   while(count > 0) count -= 1;
 }
 
-void ReEnumberate()
+void ReEnumberate(void)
 {
   USBCS &= ~0x04;
   USBCS |=  0x08;
@@ -203,7 +203,7 @@ void ReEnumberate()
   USBCS |=  0x04;
 }
 
-void doSuspend()
+void doSuspend(void)
 {
   USBBAV |= 0x08;
   do
@@ -220,12 +220,12 @@ void doSuspend()
   }
 }
 
-static void isrWakeup() //interrupt FIXME: reactivate
+static void isrWakeup(void) //interrupt FIXME: reactivate
 {
   EICON &= 0xef;
 }
 
-void initEP0()
+void initEP0(void)
 {
   configuration = 0;
   bitRemoteWakeup = 0;

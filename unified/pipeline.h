@@ -5,8 +5,8 @@
 #include <ezusb_reg.h>
 
 void isrUartBottom(byte port);
-void doEP1_ri();
-void doEP1_ti();
+void doEP1_ri(void);
+void doEP1_ti(void);
 
 void initPipes(byte ports);
 void runPipes(byte ports);
